@@ -1,91 +1,304 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
+
+type Frequency = "weekly" | "biweekly" | "monthly" | "quarterly" | "yearly";
+
+const frequencyLabels: Record<Frequency, string> = {
+  weekly: "Weekly",
+  biweekly: "Bi-weekly",
+  monthly: "Monthly",
+  quarterly: "Quarterly",
+  yearly: "Yearly",
+};
+
+const yearlyMultiplier: Record<Frequency, number> = {
+  weekly: 52,
+  biweekly: 26,
+  monthly: 12,
+  quarterly: 4,
+  yearly: 1,
+};
+
+function money(value: number) {
+  return value.toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+  });
+}
 
 export default function Home() {
-  const [income, setIncome] = useState("");
+  const [income, setIncome] = useState("5000");
+  const [frequency, setFrequency] = useState<Frequency>("monthly");
   const [percentage, setPercentage] = useState(10);
-  const [result, setResult] = useState<number | null>(null);
+  const [offering, setOffering] = useState("0");
 
-  const calculateTithe = () => {
-    const num = parseFloat(income);
-    if (!isNaN(num)) {
-      setResult((num * percentage) / 100);
-    }
-  };
+  const results = useMemo(() => {
+    const incomeNumber = Number(income) || 0;
+    const offeringNumber = Number(offering) || 0;
+
+    const tithePerPeriod = incomeNumber * (percentage / 100);
+    const totalPerPeriod = tithePerPeriod + offeringNumber;
+
+    const annualTithe = tithePerPeriod * yearlyMultiplier[frequency];
+    const annualOffering = offeringNumber * yearlyMultiplier[frequency];
+    const annualTotal = totalPerPeriod * yearlyMultiplier[frequency];
+
+    return {
+      tithePerPeriod,
+      totalPerPeriod,
+      annualTithe,
+      annualOffering,
+      annualTotal,
+      monthlyAverage: annualTotal / 12,
+      weeklyAverage: annualTotal / 52,
+    };
+  }, [income, frequency, percentage, offering]);
 
   return (
-    <main className="min-h-screen bg-black text-white flex flex-col items-center justify-center px-4">
-      
-      {/* Header */}
-      <h1 className="text-4xl font-bold mb-2 text-center">
-        Tithe Calculator AI
-      </h1>
-      <p className="text-gray-400 mb-8 text-center">
-        Calculate your tithe instantly — weekly, monthly, yearly.
-      </p>
+    <main className="min-h-screen bg-[#050814] text-white">
+      <section className="px-6 py-16">
+        <div className="mx-auto max-w-6xl text-center">
+          <p className="mb-4 text-sm font-semibold uppercase tracking-[0.35em] text-emerald-400">
+            TitheCalculatorAI.com
+          </p>
 
-      {/* Calculator Card */}
-      <div className="bg-gray-900 p-8 rounded-2xl shadow-2xl w-full max-w-md">
-        
-        {/* Income Input */}
-        <label className="block mb-2 text-sm text-gray-300">
-          Enter Income ($)
-        </label>
-        <input
-          type="number"
-          value={income}
-          onChange={(e) => setIncome(e.target.value)}
-          placeholder="e.g. 5000"
-          className="w-full p-3 rounded-lg bg-black border border-gray-700 mb-4 focus:outline-none"
-        />
+          <h1 className="mx-auto max-w-4xl text-4xl font-bold tracking-tight md:text-6xl">
+            Calculate Your Tithe Instantly
+          </h1>
 
-        {/* Percentage */}
-        <label className="block mb-2 text-sm text-gray-300">
-          Tithe Percentage (%)
-        </label>
-        <input
-          type="range"
-          min="1"
-          max="20"
-          value={percentage}
-          onChange={(e) => setPercentage(Number(e.target.value))}
-          className="w-full mb-2"
-        />
-        <p className="text-center mb-4 text-gray-400">{percentage}%</p>
+          <p className="mx-auto mt-5 max-w-2xl text-lg text-slate-300">
+            Enter your income, choose your pay period, adjust your giving
+            percentage, and see your tithe breakdown clearly.
+          </p>
 
-        {/* Button */}
-        <button
-          onClick={calculateTithe}
-          className="w-full bg-blue-600 hover:bg-blue-700 transition p-3 rounded-lg font-semibold"
-        >
-          Calculate
-        </button>
+          <div className="mx-auto mt-10 grid max-w-6xl gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+            <div className="rounded-3xl border border-slate-700 bg-slate-900/80 p-6 text-left shadow-2xl">
+              <label className="mb-2 block text-sm font-semibold text-slate-200">
+                Income per pay period
+              </label>
+              <input
+                type="number"
+                value={income}
+                onChange={(e) => setIncome(e.target.value)}
+                className="mb-5 w-full rounded-2xl border border-slate-700 bg-black px-4 py-4 text-lg outline-none focus:border-emerald-400"
+                placeholder="Example: 5000"
+              />
 
-        {/* Result */}
-        {result !== null && (
-          <div className="mt-6 text-center">
-            <p className="text-gray-400">Your Tithe:</p>
-            <h2 className="text-3xl font-bold text-green-400">
-              ${result.toFixed(2)}
-            </h2>
+              <label className="mb-2 block text-sm font-semibold text-slate-200">
+                Pay period
+              </label>
+              <div className="mb-5 grid grid-cols-2 gap-3 md:grid-cols-5">
+                {Object.entries(frequencyLabels).map(([key, label]) => (
+                  <button
+                    key={key}
+                    onClick={() => setFrequency(key as Frequency)}
+                    className={`rounded-xl px-3 py-3 text-sm font-semibold transition ${
+                      frequency === key
+                        ? "bg-emerald-400 text-black"
+                        : "bg-slate-800 text-white hover:bg-slate-700"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+
+              <label className="mb-2 block text-sm font-semibold text-slate-200">
+                Tithe percentage: {percentage}%
+              </label>
+              <input
+                type="range"
+                min="1"
+                max="20"
+                value={percentage}
+                onChange={(e) => setPercentage(Number(e.target.value))}
+                className="mb-5 w-full"
+              />
+
+              <div className="mb-5 flex flex-wrap gap-3">
+                {[5, 10, 12, 15].map((value) => (
+                  <button
+                    key={value}
+                    onClick={() => setPercentage(value)}
+                    className="rounded-full border border-slate-700 px-4 py-2 text-sm hover:border-emerald-400"
+                  >
+                    {value}%
+                  </button>
+                ))}
+              </div>
+
+              <label className="mb-2 block text-sm font-semibold text-slate-200">
+                Optional offering amount per pay period
+              </label>
+              <input
+                type="number"
+                value={offering}
+                onChange={(e) => setOffering(e.target.value)}
+                className="w-full rounded-2xl border border-slate-700 bg-black px-4 py-4 text-lg outline-none focus:border-emerald-400"
+                placeholder="Example: 25"
+              />
+            </div>
+
+            <div className="rounded-3xl border border-emerald-700 bg-emerald-950/40 p-6 text-left shadow-2xl">
+              <p className="text-sm font-semibold uppercase tracking-widest text-emerald-300">
+                Your estimated tithe
+              </p>
+
+              <h2 className="mt-4 text-5xl font-bold text-emerald-300">
+                {money(results.tithePerPeriod)}
+              </h2>
+
+              <p className="mt-2 text-slate-300">
+                Based on {percentage}% of your {frequencyLabels[frequency].toLowerCase()} income.
+              </p>
+
+              <div className="mt-8 grid gap-4">
+                <div className="rounded-2xl bg-black/30 p-4">
+                  <p className="text-slate-400">Total with offering</p>
+                  <p className="text-2xl font-bold">
+                    {money(results.totalPerPeriod)}
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="rounded-2xl bg-black/30 p-4">
+                    <p className="text-slate-400">Weekly average</p>
+                    <p className="text-xl font-bold">
+                      {money(results.weeklyAverage)}
+                    </p>
+                  </div>
+
+                  <div className="rounded-2xl bg-black/30 p-4">
+                    <p className="text-slate-400">Monthly average</p>
+                    <p className="text-xl font-bold">
+                      {money(results.monthlyAverage)}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="rounded-2xl bg-black/30 p-4">
+                  <p className="text-slate-400">Yearly giving projection</p>
+                  <p className="text-2xl font-bold">
+                    {money(results.annualTotal)}
+                  </p>
+                  <p className="mt-1 text-sm text-slate-400">
+                    Tithe: {money(results.annualTithe)} · Offering:{" "}
+                    {money(results.annualOffering)}
+                  </p>
+                </div>
+              </div>
+
+              <a
+                href="https://faithcompanionai.com"
+                className="mt-6 block rounded-2xl bg-white px-6 py-4 text-center font-bold text-black hover:bg-slate-200"
+              >
+                Continue Your Faith Journey
+              </a>
+            </div>
           </div>
-        )}
-      </div>
-
-      {/* SEO Content Section */}
-      <section className="mt-16 max-w-2xl text-center">
-        <h2 className="text-2xl font-bold mb-4">
-          What is Tithing?
-        </h2>
-        <p className="text-gray-400">
-          Tithing is the practice of giving a portion of your income, typically 10%, 
-          as an offering. It is rooted in biblical teachings such as Malachi 3:10 
-          and Proverbs 3:9. This calculator helps you quickly determine your tithe 
-          based on your income.
-        </p>
+        </div>
       </section>
 
+      <section className="border-t border-slate-800 px-6 py-16">
+        <div className="mx-auto max-w-4xl space-y-12">
+          <div>
+            <h2 className="text-3xl font-bold">What Is Tithing?</h2>
+            <p className="mt-4 leading-8 text-slate-300">
+              Tithing is the practice of giving a portion of your income back to
+              God. Many Christians understand a tithe as 10% of income. This
+              calculator helps you estimate your tithe clearly based on your pay
+              period and chosen percentage.
+            </p>
+          </div>
+
+          <div>
+            <h2 className="text-3xl font-bold">
+              What Does the Bible Say About Tithing?
+            </h2>
+
+            <div className="mt-6 grid gap-4">
+              <div className="rounded-2xl border border-slate-700 bg-slate-900 p-5">
+                <h3 className="font-bold text-emerald-300">Malachi 3:10</h3>
+                <p className="mt-2 text-slate-300">
+                  This verse speaks about bringing the tithe and trusting God’s
+                  provision.
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-slate-700 bg-slate-900 p-5">
+                <h3 className="font-bold text-emerald-300">Proverbs 3:9</h3>
+                <p className="mt-2 text-slate-300">
+                  This verse teaches honoring the Lord with your wealth and the
+                  firstfruits of what you receive.
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-slate-700 bg-slate-900 p-5">
+                <h3 className="font-bold text-emerald-300">Genesis 14:20</h3>
+                <p className="mt-2 text-slate-300">
+                  Abram gave a tenth, showing an early biblical example of
+                  giving.
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-slate-700 bg-slate-900 p-5">
+                <h3 className="font-bold text-emerald-300">2 Corinthians 9:7</h3>
+                <p className="mt-2 text-slate-300">
+                  This verse reminds believers that giving should come from the
+                  heart, not from pressure.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h2 className="text-3xl font-bold">
+              Tithe vs Offering: What Is the Difference?
+            </h2>
+            <p className="mt-4 leading-8 text-slate-300">
+              A tithe is commonly understood as a set portion, often 10%, given
+              as an act of faith and obedience. An offering is usually extra
+              giving beyond the tithe. Offerings may support missions, church
+              projects, families in need, community outreach, or other causes.
+            </p>
+          </div>
+
+          <div className="rounded-3xl border border-emerald-700 bg-emerald-950/40 p-8 text-center">
+            <h2 className="text-3xl font-bold">
+              Grow Beyond the Calculation
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-slate-300">
+              TitheCalculatorAI helps you calculate your giving. FaithCompanionAI
+              helps you grow spiritually with prayers, Bible tools, devotionals,
+              and saved faith content.
+            </p>
+
+            <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
+              <a
+                href="https://faithcompanionai.com"
+                className="rounded-2xl bg-white px-6 py-3 font-bold text-black hover:bg-slate-200"
+              >
+                Visit FaithCompanionAI
+              </a>
+
+              <a
+                href="https://prayergeneratorai.com"
+                className="rounded-2xl border border-slate-600 px-6 py-3 font-bold text-white hover:border-emerald-400"
+              >
+                Generate a Prayer
+              </a>
+
+              <a
+                href="https://bibleversegeneratorai.com"
+                className="rounded-2xl border border-slate-600 px-6 py-3 font-bold text-white hover:border-emerald-400"
+              >
+                Find Bible Verses
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
     </main>
   );
 }

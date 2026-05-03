@@ -28,7 +28,7 @@ function money(value: number) {
 }
 
 export default function Home() {
-  const [income, setIncome] = useState("5000");
+  const [income, setIncome] = useState("");
   const [frequency, setFrequency] = useState<Frequency>("monthly");
   const [percentage, setPercentage] = useState(10);
   const [offering, setOffering] = useState("0");
@@ -82,7 +82,7 @@ export default function Home() {
                 value={income}
                 onChange={(e) => setIncome(e.target.value)}
                 className="mb-5 w-full rounded-2xl border border-slate-700 bg-black px-4 py-4 text-lg outline-none focus:border-emerald-400"
-                placeholder="Example: 5000"
+                placeholder="Enter your income"
               />
 
               <label className="mb-2 block text-sm font-semibold text-slate-200">

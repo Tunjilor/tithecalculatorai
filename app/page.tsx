@@ -214,6 +214,41 @@ export default function Home() {
 
           <div>
             <h2 className="text-3xl font-bold">
+              Should You Tithe on Gross or Net Income?
+            </h2>
+            <p className="mt-4 leading-8 text-slate-300">
+              This is one of the most common questions Christians ask about
+              tithing.
+            </p>
+
+            <div className="mt-6 grid gap-4">
+              <div className="rounded-2xl border border-slate-700 bg-slate-900 p-5">
+                <h3 className="font-bold text-emerald-300">Gross Income View</h3>
+                <p className="mt-2 text-slate-300">
+                  Some believers tithe on their gross (pre-tax) income, seeing
+                  it as giving God the first and full portion before any
+                  deductions.
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-slate-700 bg-slate-900 p-5">
+                <h3 className="font-bold text-emerald-300">Net Income View</h3>
+                <p className="mt-2 text-slate-300">
+                  Others tithe on net (after-tax) income, reasoning that they
+                  never actually receive the withheld portion.
+                </p>
+              </div>
+            </div>
+
+            <p className="mt-4 leading-8 text-slate-300">
+              Both views are held by sincere Christians. The most important
+              thing is giving cheerfully and consistently. Use the calculator
+              above to find your number either way.
+            </p>
+          </div>
+
+          <div>
+            <h2 className="text-3xl font-bold">
               What Does the Bible Say About Tithing?
             </h2>
 

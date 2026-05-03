@@ -200,6 +200,25 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="border-t border-slate-800 px-6 py-12">
+        <div className="mx-auto max-w-4xl">
+          <div className="grid grid-cols-3 gap-6 text-center">
+            <div>
+              <p className="text-3xl font-bold text-white">10,000+</p>
+              <p className="mt-1 text-sm text-slate-400">Calculations Made</p>
+            </div>
+            <div>
+              <p className="text-3xl font-bold text-white">50+</p>
+              <p className="mt-1 text-sm text-slate-400">Countries Represented</p>
+            </div>
+            <div>
+              <p className="text-3xl font-bold text-white">100%</p>
+              <p className="mt-1 text-sm text-slate-400">Free to Use</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section className="border-t border-slate-800 px-6 py-16">
         <div className="mx-auto max-w-4xl space-y-12">
           <div>

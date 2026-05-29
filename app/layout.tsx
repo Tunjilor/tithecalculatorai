@@ -184,6 +184,39 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(siteJsonLd) }}
         />
         {children}
+        <footer className="border-t border-slate-800 mt-16">
+          <div className="mx-auto max-w-4xl px-6 py-8 flex flex-col items-center gap-4 text-center">
+            <div className="flex flex-wrap justify-center gap-x-6 gap-y-2">
+              <a
+                href="https://www.prayergeneratorai.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-slate-400 hover:text-emerald-400 transition-colors"
+              >
+                AI Prayer Generator
+              </a>
+              <a
+                href="https://www.bibleversegeneratorai.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-slate-400 hover:text-emerald-400 transition-colors"
+              >
+                Bible Verse Generator AI
+              </a>
+              <a
+                href="https://faithcompanionai.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-slate-400 hover:text-emerald-400 transition-colors"
+              >
+                Faith Companion AI
+              </a>
+            </div>
+            <p className="text-xs text-slate-600">
+              Part of the Faith Companion AI ecosystem — explore all free Christian AI tools at faithcompanionai.com
+            </p>
+          </div>
+        </footer>
         <Analytics />
       </body>
     </html>
